@@ -1,49 +1,19 @@
-var Promise = require('promise');
-var chrome = require("chrome-framework");
+var Promise = require('es6-promise').Promise;
 var MAX_WAIT = 20;
 
 function loadCSS(opts) {
-  var url = chrome.extension.getURL(opts.path);
+  var url = chrome.runtime.getURL(opts.path);
 
   var link = document.createElement("link");
-  var sheets = document.styleSheets;
   link.rel = "stylesheet";
   link.href = url;
   if (opts.id) link.id = opts.id;
 
   document.head.appendChild(link);
 
-  var checkElement = document.createElement("div");
-  checkElement.setAttribute("class", opts.checkClass);
-  document.body.appendChild(checkElement);
-
-  var scheduleId = null;
-  var attempts = 0;
-
-  return new Promise(function(resolve, reject) {
-    function scheduleCheck() {
-      var content = window.
-        getComputedStyle(checkElement, ":before").
-        getPropertyValue("content");
-
-      if (attempts > MAX_WAIT) {
-        return reject(
-          Error("fail to load css: '" + url + "', content loaded: " + content)
-        );
-      }
-
-      if (/loaded/.test(content)) {
-        cancelAnimationFrame(scheduleId);
-        document.body.removeChild(checkElement);
-        resolve();
-
-      } else {
-        attempts++;
-        scheduleId = requestAnimationFrame(scheduleCheck, 1);
-      }
-    }
-
-    scheduleCheck();
+  // 直接异步 resolve，不检测 content
+  return new Promise(function(resolve) {
+    setTimeout(resolve, 100);
   });
 }
 

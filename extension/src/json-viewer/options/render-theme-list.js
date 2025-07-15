@@ -19,27 +19,17 @@ var themeJSONExample = {
 
 function onThemeChange(input, editor) {
   var selectedTheme = input.options[input.selectedIndex].value;
-  // Split '_' to allow themes with variations (e.g: solarized dark; solarized light)
-  var themeOption = selectedTheme.replace(/_/, ' ');
+  var themeOption = selectedTheme; // 直接用主题名
 
   var currentLinkTag = document.getElementById('selected-theme');
   if (currentLinkTag !== null) {
     document.head.removeChild(currentLinkTag);
   }
 
-  var themeToLoad = {
-    id: "selected-theme",
-    path: "themes/" + themeDarkness(selectedTheme) + "/" + selectedTheme + ".css",
-    checkClass: "theme-" + selectedTheme + "-css-check"
-  };
-
   if (selectedTheme === "default") {
-    editor.setOption("theme", themeOption);
-
+    editor.setOption("theme", "default");
   } else {
-    loadCss(themeToLoad).then(function() {
-      editor.setOption("theme", themeOption);
-    });
+    editor.setOption("theme", themeOption);
   }
 }
 
@@ -58,7 +48,7 @@ function renderThemeList(CodeMirror, value) {
     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
   });
 
-  themes.onchange = function() {
+  themesInput.onchange = function() {
     onThemeChange(themesInput, themeEditor);
   }
 
@@ -67,8 +57,11 @@ function renderThemeList(CodeMirror, value) {
   themesInput.appendChild(createThemeGroup("Light", themesList.light, optionSelected));
   themesInput.appendChild(createThemeGroup("Dark", themesList.dark, optionSelected));
 
+  // 保证 select 选中项和配置一致
+  themesInput.value = optionSelected;
+
   if (optionSelected && optionSelected !== "default") {
-    themes.onchange();
+    themesInput.onchange();
   }
 }
 

@@ -3,11 +3,9 @@ function exposeJson(text, outsideViewer) {
 
   if (outsideViewer) {
     window.json = JSON.parse(text);
-
   } else {
-    var script = document.createElement("script") ;
-    script.innerHTML = 'window.json = ' + text + ';';
-    document.head.appendChild(script);
+    // 通过 postMessage 传递 JSON 数据，避免 CSP 拦截
+    window.postMessage({ type: 'JSON_VIEWER_SET_JSON', json: text }, '*');
   }
 }
 

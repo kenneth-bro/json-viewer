@@ -1,21 +1,21 @@
-var Promise = require('promise');
+var Promise = require('es6-promise').Promise;
 var loadCss = require('../load-css');
 var themeDarkness = require('../theme-darkness');
 
 function loadRequiredCss(options) {
-  var theme = options.theme;
   var loaders = [];
   loaders.push(loadCss({
     path: "assets/viewer.css",
     checkClass: "json-viewer-css-check"
   }));
 
-  if (theme && theme !== "default") {
-    loaders.push(loadCss({
-      path: "themes/" + themeDarkness(theme) + "/" + theme + ".css",
-      checkClass: "theme-" + theme + "-css-check"
-    }));
-  }
+  // 不再加载自定义主题 CSS
+  // if (theme && theme !== "default") {
+  //   loaders.push(loadCss({
+  //     path: "themes/" + themeDarkness(theme) + "/" + theme + ".css",
+  //     checkClass: "theme-" + theme + "-css-check"
+  //   }));
+  // }
 
   return Promise.all(loaders).then(function() {
     var style = document.createElement("style");

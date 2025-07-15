@@ -35,26 +35,31 @@ function renderVersion() {
 }
 
 function onLoaded() {
-  var currentOptions = Storage.load();
+  Storage.load().then(function(currentOptions) {
+    renderVersion();
+    renderThemeList(CodeMirror, currentOptions.theme);
+    var addonsEditor = renderAddons(CodeMirror, currentOptions.addons);
+    var structureEditor = renderStructure(CodeMirror, currentOptions.structure);
+    var styleEditor = renderStyle(CodeMirror, currentOptions.style);
 
-  renderVersion();
-  renderThemeList(CodeMirror, currentOptions.theme);
-  var addonsEditor = renderAddons(CodeMirror, currentOptions.addons);
-  var structureEditor = renderStructure(CodeMirror, currentOptions.structure);
-  var styleEditor = renderStyle(CodeMirror, currentOptions.style);
-
-  bindResetButton();
-  bindSaveButton([addonsEditor, structureEditor, styleEditor], function(options) {
-    if (!isValidJSON(options.addons)) {
-      sweetAlert("Ops!", "\"Add-ons\" isn't a valid JSON", "error");
-
-    } else if (!isValidJSON(options.structure)) {
-      sweetAlert("Ops!", "\"Structure\" isn't a valid JSON", "error");
-
-    } else {
-      Storage.save(options);
-      sweetAlert("Success", "Options saved!", "success");
-    }
+    bindResetButton();
+    bindSaveButton([addonsEditor, structureEditor, styleEditor], function(options) {
+      if (!isValidJSON(options.addons)) {
+        sweetAlert("Ops!", "\"Add-ons\" isn't a valid JSON", "error");
+      } else if (!isValidJSON(options.structure)) {
+        sweetAlert("Ops!", "\"Structure\" isn't a valid JSON", "error");
+      } else {
+        // 保证 addons/structure 存储为对象
+        options.addons = JSON.parse(options.addons);
+        options.structure = JSON.parse(options.structure);
+        Storage.save(options).then(function() {
+          // 同步到 background
+          chrome.runtime.sendMessage({action: 'SET_OPTIONS', value: options}, function() {
+            sweetAlert("Success", "Options saved!", "success");
+          });
+        });
+      }
+    });
   });
 }
 

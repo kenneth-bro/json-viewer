@@ -65,6 +65,7 @@ function prependHeader(options, outsideViewer, jsonText) {
 
 function highlightContent(pre, outsideViewer, ignoreLimit) {
   getOptions().then(function(options) {
+    console.log('[JSONViewer] highlightContent options:', options);
     if (!ignoreLimit && oversizedJSON(pre, options, outsideViewer)) {
       return pre.hidden = false;
     }

@@ -1,4 +1,4 @@
-var Promise = require('promise');
+var Promise = require('es6-promise').Promise;
 var jsonFormater = require('./jsl-format');
 var extractJSON = require('./extract-json');
 

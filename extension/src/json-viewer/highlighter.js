@@ -19,6 +19,7 @@ function Highlighter(jsonText, options) {
   this.defaultSearch = false;
   this.theme = this.options.theme || "default";
   this.theme = this.theme.replace(/_/, ' ');
+  console.log('[JSONViewer] Highlighter theme:', this.theme);
 }
 
 Highlighter.prototype = {
